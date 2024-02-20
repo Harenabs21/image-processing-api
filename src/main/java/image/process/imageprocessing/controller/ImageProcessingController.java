@@ -1,6 +1,7 @@
 package image.process.imageprocessing.controller;
 
 import image.process.imageprocessing.service.ConvertGrayscaleService;
+import image.process.imageprocessing.service.ResizeImageService;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
@@ -21,9 +22,12 @@ public class ImageProcessingController {
 
     private final ConvertGrayscaleService grayscaleService;
 
-    public ImageProcessingController(@Value("${image.directory}") String imageDirectory, ConvertGrayscaleService grayscaleService) {
+    private final ResizeImageService resizeImageService;
+
+    public ImageProcessingController(@Value("${image.directory}") String imageDirectory, ConvertGrayscaleService grayscaleService, ResizeImageService resizeImageService) {
         this.imageDirectory = imageDirectory;
         this.grayscaleService = grayscaleService;
+        this.resizeImageService = resizeImageService;
     }
 
     @PostMapping("/convert-grayscale")
@@ -32,23 +36,43 @@ public class ImageProcessingController {
             byte[] imageData = file.getBytes();
             String formatName = format != null ? format : getFileExtension(file.getOriginalFilename());
             byte[] result = grayscaleService.convertToBlackAndWhite(imageData, formatName);
-            String fileName = name != null ? name : file.getOriginalFilename();
-            if (formatName != null) {
-                assert fileName != null;
-                if (!fileName.toLowerCase().endsWith("." + formatName.toLowerCase())) {
-                    fileName += "." + formatName;
-                }
-            }
-            saveImageToDisk(result, fileName);
-            assert formatName != null;
-            return ResponseEntity.ok()
-                    .header("Content-Disposition", "attachment; filename=\"" + fileName + "\"")
-                    .contentType(getMediaType(formatName))
-                    .body(result);
+            return getResponseEntity(file, name, formatName, result);
 
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @PostMapping("/resize")
+    public ResponseEntity<byte[]> postNewSizeOfImage(@RequestBody MultipartFile file,
+                                                     @RequestParam int width,
+                                                     @RequestParam int height,
+                                                     @RequestParam(required = false) String format,
+                                                     @RequestParam(required = false) String name) throws IOException {
+        try{
+            byte[] imageData = file.getBytes();
+            String formatName = format != null ? format : getFileExtension(file.getOriginalFilename());
+            byte[] result = resizeImageService.resize(imageData,width,height,formatName);
+            return getResponseEntity(file, name, formatName, result);
+        }catch (IOException e){
+            throw new IOException(e);
+        }
+    }
+
+    private ResponseEntity<byte[]> getResponseEntity(@RequestBody MultipartFile file, @RequestParam(required = false) String name, String formatName, byte[] result) throws IOException {
+        String fileName = name != null ? name : file.getOriginalFilename();
+        if (formatName != null) {
+            assert fileName != null;
+            if (!fileName.toLowerCase().endsWith("." + formatName.toLowerCase())) {
+                fileName += "." + formatName;
+            }
+        }
+        saveImageToDisk(result, fileName);
+        assert formatName != null;
+        return ResponseEntity.ok()
+                .header("Content-Disposition", "attachment; filename=\"" + fileName + "\"")
+                .contentType(getMediaType(formatName))
+                .body(result);
     }
 
     private void saveImageToDisk(byte[] imageData, String filename) throws IOException {
