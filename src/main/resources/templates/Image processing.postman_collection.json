@@ -1,0 +1,107 @@
+{
+	"info": {
+		"_postman_id": "c0c995de-b981-4dcf-b738-9ed1be7c51f9",
+		"name": "Image processing",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "28557576",
+		"_collection_link": "https://cloudy-space-468286.postman.co/workspace/Revision~826e1145-80e6-4234-bdb1-3e7807c47d36/collection/28557576-c0c995de-b981-4dcf-b738-9ed1be7c51f9?action=share&source=collection_link&creator=28557576"
+	},
+	"item": [
+		{
+			"name": "Grayscale",
+			"item": [
+				{
+					"name": "convert to black and white",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": "/C:/Users/USER/Pictures/37fb5eeb19e51ded870d61e933348863.jpg"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:8080/convert-grayscale?format=png&name=clover",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"convert-grayscale"
+							],
+							"query": [
+								{
+									"key": "format",
+									"value": "png"
+								},
+								{
+									"key": "name",
+									"value": "clover"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Resizing",
+			"item": [
+				{
+					"name": "resize",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": "/C:/Users/USER/Pictures/37fb5eeb19e51ded870d61e933348863 (2).jpg"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://localhost:8080/resize?width=355&height=330&format=png&name=clover-resize",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"resize"
+							],
+							"query": [
+								{
+									"key": "width",
+									"value": "355"
+								},
+								{
+									"key": "height",
+									"value": "330"
+								},
+								{
+									"key": "format",
+									"value": "png"
+								},
+								{
+									"key": "name",
+									"value": "clover-resize"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
