@@ -1,0 +1,117 @@
+openapi: 3.0.0
+info:
+  title: Image processing API
+  description: API for converting images to black and white and resizing images
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080
+tags:
+  - name: Black-and-white
+  - name: Resize
+paths:
+  /convert-grayscale:
+    post:
+      tags:
+        - Black-and-white
+      summary: convert an image to black and white
+      parameters:
+        - $ref: '#/components/parameters/format'
+        - $ref: '#/components/parameters/newName'
+      requestBody:
+        $ref: '#/components/requestBodies/Body'
+      responses:
+        '200':
+          $ref: '#/components/responses/200'
+        '500':
+          $ref: '#/components/responses/500'
+
+  /resize:
+    post:
+      tags:
+        - Resize
+      summary: resize an image
+      parameters:
+        - $ref: '#/components/parameters/format'
+        - $ref: '#/components/parameters/newName'
+        - name: width
+          in: query
+          required: true
+          schema:
+            type: integer
+        - name: height
+          in: query
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        $ref: '#/components/requestBodies/Body'
+      responses:
+        '200':
+          $ref: '#/components/responses/200'
+        '500':
+          $ref: '#/components/responses/500'
+
+
+components:
+  parameters:
+    newName:
+      name: name
+      in: query
+      required: false
+      schema:
+        type: string
+    format:
+      name: format
+      in: query
+      required: false
+      schema:
+        type: string
+        enum:
+          - 'png'
+          - 'jpg'
+          - 'jpeg'
+          - 'gif'
+  responses:
+    200:
+      description: image operation success
+      content:
+        image/jpeg:
+          schema:
+            type: string
+            format: binary
+        image/png:
+          schema:
+            type: string
+            format: binary
+        image/gif:
+          schema:
+            type: string
+            format: binary
+    500:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 500
+                  message:
+                    type: string
+                    example: Internal server error
+
+  requestBodies:
+    Body:
+      description: image to modify
+      content:
+        multipart/form-data:
+          schema:
+            type: object
+            properties:
+              file:
+                type: string
+                format: binary
