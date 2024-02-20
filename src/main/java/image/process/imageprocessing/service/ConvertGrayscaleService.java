@@ -12,7 +12,7 @@ import java.io.IOException;
 @Service
 public class ConvertGrayscaleService {
 
-    public byte[] convertToBlackAndWhite (byte[] imageData, String format, String newName) throws IOException {
+    public byte[] convertToBlackAndWhite (byte[] imageData, String format) throws IOException {
         BufferedImage originalImage = ImageIO.read(new ByteArrayInputStream(imageData));
         BufferedImage convertedImage = Scalr.apply(originalImage,Scalr.OP_GRAYSCALE);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
